@@ -2,15 +2,15 @@
 
 API::Instagram - OO Interface to Instagram REST API
 
+=for HTML <a href="https://travis-ci.org/gabrielmad/API-Instagram"><img src="https://travis-ci.org/gabrielmad/API-Instagram.svg?branch=build%2Fmaster"></a>
 
 =head1 VERSION
 
-version 0.0011
+version 0.002
 
 =cut
 
 package API::Instagram;
-use Data::Dumper;
 use Moo;
 
 use Carp;
@@ -41,8 +41,9 @@ has response_type     => ( is => 'ro', default => sub { 'code'  } );
 has grant_type        => ( is => 'ro', default => sub { 'authorization_code' } );
 has code              => ( is => 'rw', isa => sub { confess "Code not provided"        unless $_[0] } );
 has access_token      => ( is => 'rw', isa => sub { confess "No access token provided" unless $_[0] } );
+has no_cache          => ( is => 'rw', default => 0 );
 
-has _http             => ( is => 'ro', default => sub { LWP::UserAgent->new() } );
+has _ua               => ( is => 'ro', default => sub { LWP::UserAgent->new() } );
 has _obj_cache        => ( is => 'ro', default => sub { { users => {}, medias => {}, locations => {}, tags => {} } } );
 has _endpoint_url     => ( is => 'ro', default => sub { 'https://api.instagram.com/v1'                 } );
 has _authorize_url    => ( is => 'ro', default => sub { 'https://api.instagram.com/oauth/authorize'    } );
@@ -130,9 +131,10 @@ authenticated user credentials.
 			scope           => 'basic',
 			response_type   => 'code',
 			granty_type     => 'authorization_code',
+			no_cache        => 1,
 	});
 
-Returns a L<API::Instagram> object.
+Returns an L<API::Instagram> object.
 
 Set C<client_id>, C<client_secret> and C<redirect_uri> with the ones registered
 to your application. See L<http://instagram.com/developer/clients/manage/>.
@@ -141,10 +143,12 @@ C<scope> is the scope of access. See L<http://instagram.com/developer/authentica
 
 C<response_code> and C<granty_type> do no vary. See L<http://instagram.com/developer/authentication/>.
 
+By default, L<API::Instagram> caches created objects to avoid duplications. You can disable
+this feature setting a true value to C<no_chace> parameter.
 
 =head2 get_auth_url
 
-Returns a Instagram authorization URL.
+Returns an Instagram authorization URL.
 
 	my $auth_url = $instagram->get_auth_url;
 	print $auth_url;
@@ -188,7 +192,7 @@ sub get_access_token {
 	}
 
 	my $data = { map { $_ => $self->$_ } @access_token_fields };
-	my $json = from_json $self->_http->post( $self->_access_token_url, $data )->content;
+	my $json = from_json $self->_ua  ->post( $self->_access_token_url, $data )->content;
 
 	my $meta = $json->{meta};
 	confess "ERROR $meta->{error_type}: $meta->{error_message}" if $meta->{code} ne '200';
@@ -202,7 +206,7 @@ sub get_access_token {
 	my $media = $instagram->media( $media_id );
 	say $media->type;
 
-Get information about a media object. Returns a L<API::Instagram::Media> object.
+Get information about a media object. Returns an L<API::Instagram::Media> object.
 
 =cut
 sub media { shift->_get_obj( 'media', '/medias', 'medias', 'id', shift ) }
@@ -216,7 +220,7 @@ sub media { shift->_get_obj( 'media', '/medias', 'medias', 'id', shift ) }
 	my $user = $instagram->user( $user_id );
 	say $user->full_name;
 
-Get information about user. Returns a L<API::Instagram::User> object.
+Get information about user. Returns an L<API::Instagram::User> object.
 
 =cut
 sub user { shift->_get_obj( 'user', '/users', 'users', 'id', shift || 'self' ) }
@@ -227,7 +231,7 @@ sub user { shift->_get_obj( 'user', '/users', 'users', 'id', shift || 'self' ) }
 	my $location = $instagram->location( $location_id );
 	say $location->name;
 
-Get information about a location. Returns a L<API::Instagram::Location> object.
+Get information about a location. Returns an L<API::Instagram::Location> object.
 
 =cut
 sub location { shift->_get_obj( 'location', '/locations', 'locations', 'id', shift ) }
@@ -238,13 +242,10 @@ sub location { shift->_get_obj( 'location', '/locations', 'locations', 'id', shi
 	my $tag = $instagram->tag('perl');
 	say $tag->media_count;
 
-Get information about a tag. Returns a L<API::Instagram::Tag> object.
+Get information about a tag. Returns an L<API::Instagram::Tag> object.
 
 =cut
 sub tag { shift->_get_obj( 'tag', '/tags', 'tags', 'name', shift ) }
-
-
-
 
 
 
@@ -258,6 +259,10 @@ sub _get_obj {
 	$data      = ref $data eq 'HASH' ? $data : $self->_request( "$url/$id" )->{data};
 
 	$self->_cache($cache)->{$id} //= $self->$method( $data );
+
+	delete $self->_cache($cache)->{$id} if $self->no_cache;
+
+	$self->_cache($cache)->{$id};
 }
 
 sub _create_media_object {
@@ -341,7 +346,7 @@ sub _request {
 	    $url = $uri->as_string;
 	}
 
-	my $res  = decode_json $self->_http->get( $url )->decoded_content;
+	my $res  = decode_json $self->_ua  ->get( $url )->decoded_content;
 	my $meta = $res->{meta};
 	carp "ERROR $meta->{error_type}: $meta->{error_message}" if $meta->{code} ne '200';
 
@@ -371,8 +376,13 @@ L<http://github.com/gabrielmad/API-Instagram>
 
 =head1 SEE ALSO
 
+=over
+
+=item *
+
 L<WebService::Instagram>
 
+=back
 
 =head1 AUTHOR
 

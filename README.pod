@@ -2,12 +2,11 @@
 
 API::Instagram - OO Interface to Instagram REST API
 
-=for HTML <a href="https://travis-ci.org/gabrielmad/API-Instagram"><img src="https://travis-ci.org/gabrielmad/API-Instagram.svg?branch=master"></a>
-
+=for HTML <a href="https://travis-ci.org/gabrielmad/API-Instagram"><img src="https://travis-ci.org/gabrielmad/API-Instagram.svg?branch=build%2Fmaster"></a>
 
 =head1 VERSION
 
-version 0.0011
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -90,9 +89,10 @@ authenticated user credentials.
 			scope           => 'basic',
 			response_type   => 'code',
 			granty_type     => 'authorization_code',
+			no_cache        => 1,
 	});
 
-Returns a L<API::Instagram> object.
+Returns an L<API::Instagram> object.
 
 Set C<client_id>, C<client_secret> and C<redirect_uri> with the ones registered
 to your application. See L<http://instagram.com/developer/clients/manage/>.
@@ -101,10 +101,12 @@ C<scope> is the scope of access. See L<http://instagram.com/developer/authentica
 
 C<response_code> and C<granty_type> do no vary. See L<http://instagram.com/developer/authentication/>.
 
+By default, L<API::Instagram> caches created objects to avoid duplications. You can disable
+this feature setting a true value to C<no_chace> parameter.
 
 =head2 get_auth_url
 
-Returns a Instagram authorization URL.
+Returns an Instagram authorization URL.
 
 	my $auth_url = $instagram->get_auth_url;
 	print $auth_url;
@@ -126,7 +128,7 @@ L<API::Instagram::User> object if looking a list value.
 	my $media = $instagram->media( $media_id );
 	say $media->type;
 
-Get information about a media object. Returns a L<API::Instagram::Media> object.
+Get information about a media object. Returns an L<API::Instagram::Media> object.
 
 =head2 user
 
@@ -136,21 +138,21 @@ Get information about a media object. Returns a L<API::Instagram::Media> object.
 	my $user = $instagram->user( $user_id );
 	say $user->full_name;
 
-Get information about user. Returns a L<API::Instagram::User> object.
+Get information about user. Returns an L<API::Instagram::User> object.
 
 =head2 location
 
 	my $location = $instagram->location( $location_id );
 	say $location->name;
 
-Get information about a location. Returns a L<API::Instagram::Location> object.
+Get information about a location. Returns an L<API::Instagram::Location> object.
 
 =head2 tag
 
 	my $tag = $instagram->tag('perl');
 	say $tag->media_count;
 
-Get information about a tag. Returns a L<API::Instagram::Tag> object.
+Get information about a tag. Returns an L<API::Instagram::Tag> object.
 
 =head1 BUGS
 
@@ -163,8 +165,13 @@ L<http://github.com/gabrielmad/API-Instagram>
 
 =head1 SEE ALSO
 
+=over
+
+=item *
+
 L<WebService::Instagram>
 
+=back
 
 =head1 AUTHOR
 
