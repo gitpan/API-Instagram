@@ -1,10 +1,6 @@
-=head1 NAME
-
-API::Instagram::Media - Instagram Media Object
-
-=cut
-
 package API::Instagram::Media;
+
+# ABSTRACT: Instagram Media Object
 
 use Moo;
 use Time::Moment;
@@ -41,6 +37,42 @@ sub BUILD {
 	];
 }
 
+sub get_likes {
+	my $self = shift;
+	my %opts = @_;
+	my $url  = "/media/" . $self->id . "/likes";
+	my $instagram = $self->_instagram;
+	[ map { $instagram->user($_) } $instagram->_get_list( %opts, url => $url ) ]
+}
+
+
+sub get_comments {
+	my $self = shift;
+	my %opts = @_;
+	my $url  = "/media/" . $self->id . "/comments";
+	my $instagram = $self->_instagram;
+	[ map { $instagram->_create_comment_object($_) } $instagram->_get_list( %opts, url => $url ) ]
+}
+
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+API::Instagram::Media - Instagram Media Object
+
+=for Pod::Coverage BUILD
+
+=head1 VERSION
+
+version 0.005.1
+
 =head1 SYNOPSIS
 
 	my $media = $instagram->media(3);
@@ -50,7 +82,6 @@ sub BUILD {
 
 	my $location = $media->location;
 	printf "Media Location: %s (%f,%f)", $location->name, $location->latitude, $location->longitude;
-
 
 =head1 DESCRIPTION
 
@@ -139,15 +170,6 @@ Returns a list of L<API::Instagram::User> objects of users who liked the media.
 
 Accepts C<count>.
 
-=cut
-sub get_likes {
-	my $self = shift;
-	my %opts = @_;
-	my $url  = "/media/" . $self->id . "/likes";
-	my $instagram = $self->_instagram;
-	[ map { $instagram->user($_) } $instagram->_get_list( %opts, url => $url ) ]
-}
-
 =head2 get_comments
 
 	my @comments = $media->get_comments( count => 5 );
@@ -156,14 +178,15 @@ Returns a list of L<API::Instagram::Media::Comment> objects of the media.
 
 Accepts C<count>.
 
+=head1 AUTHOR
+
+Gabriel Vieira <gabriel.vieira@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Gabriel Vieira.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
-
-sub get_comments {
-	my $self = shift;
-	my %opts = @_;
-	my $url  = "/media/" . $self->id . "/comments";
-	my $instagram = $self->_instagram;
-	[ map { $instagram->_create_comment_object($_) } $instagram->_get_list( %opts, url => $url ) ]
-}
-
-1;

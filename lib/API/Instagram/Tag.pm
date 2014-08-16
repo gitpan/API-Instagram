@@ -1,16 +1,35 @@
-=head1 NAME
-
-API::Instagram::Tag - Instagram Tag Object
-
-=cut
-
 package API::Instagram::Tag;
+
+# ABSTRACT: Instagram Tag Object
 
 use Moo;
 
 has _instagram  => ( is => 'ro' );
 has name        => ( is => 'ro' );
 has media_count => ( is => 'ro' );
+
+
+sub recent_medias {
+	my $self = shift;
+	my $url  = "/tags/" . $self->name . "/media/recent";
+	$self->_instagram->_recent_medias( $url, @_ );
+}
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+API::Instagram::Tag - Instagram Tag Object
+
+=head1 VERSION
+
+version 0.005.1
 
 =head1 SYNOPSIS
 
@@ -50,12 +69,15 @@ Returns a list of L<API::Instagram::Media> objects of recent medias tagged with 
 
 Accepts C<count>, C<min_timestamp>, C<min_id>, C<max_id> and C<max_timestamp> as parameters.
 
+=head1 AUTHOR
+
+Gabriel Vieira <gabriel.vieira@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Gabriel Vieira.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
-
-sub recent_medias {
-	my $self = shift;
-	my $url  = "/tags/" . $self->name . "/media/recent";
-	$self->_instagram->_recent_medias( $url, @_ );
-}
-
-1;

@@ -2,7 +2,7 @@ NAME
     API::Instagram - OO Interface to Instagram REST API
 
 VERSION
-    version 0.005
+    version 0.005.1
 
 SYNOPSIS
             use API::Instagram;
@@ -53,7 +53,7 @@ DESCRIPTION
     "redirect_uri" with a code as an URL query parameter. This code is
     needed to obtain an acess token.
 
-            $instagram->set_code( $code );
+            $instagram->code( $code );
             my $access_token = $instagram->get_access_token;
 
    Request
@@ -61,7 +61,7 @@ DESCRIPTION
     the authenticated user credentials.
 
             $instagram->access_token( $access_token );
-            my $me = $instagram->get_user;
+            my $me = $instagram->user;
             print $me->full_name;
 
 METHODS
@@ -138,21 +138,12 @@ METHODS
 
     Get information about a tag. Returns an API::Instagram::Tag object.
 
-BUGS
-    Please report me bugs if you find any.
-
-    <http://github.com/gabrielmad/API-Instagram/issues>
-
-SEE ALSO
-    *   WebService::Instagram
-
 AUTHOR
-    Gabriel Vieira "<gabriel.vieira at gmail.com>"
+    Gabriel Vieira <gabriel.vieira@gmail.com>
 
-LICENSE AND COPYRIGHT
-    Copyright (c) 2014, Gabriel Vieira "<gabriel.vieira at gmail.com>". All
-    rights reserved.
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2014 by Gabriel Vieira.
 
-    This module is free software; you can redistribute it and/or modify it
-    under the same terms as Perl itself. See perlartistic.
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 

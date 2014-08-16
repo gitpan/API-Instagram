@@ -1,10 +1,6 @@
-=head1 NAME
-
-API::Instagram::Media::Comment - Instagram Media Comment Object
-
-=cut
-
 package API::Instagram::Media::Comment;
+
+# ABSTRACT: Instagram Media Comment Object
 
 use Moo;
 use Time::Moment;
@@ -19,6 +15,25 @@ sub BUILD {
 	my $self = shift;
 	$self->{from} = $self->_instagram->user( $self->{from} );
 }
+
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+API::Instagram::Media::Comment - Instagram Media Comment Object
+
+=for Pod::Coverage BUILD
+
+=head1 VERSION
+
+version 0.005.1
 
 =head1 SYNOPSIS
 
@@ -47,6 +62,15 @@ Returns the text commented.
 
 Returns the comment date in a L<Time::Moment> object.
 
-=cut
+=head1 AUTHOR
 
-1;
+Gabriel Vieira <gabriel.vieira@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Gabriel Vieira.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

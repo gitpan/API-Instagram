@@ -1,10 +1,6 @@
-=head1 NAME
-
-API::Instagram::Location - Instagram Location Object
-
-=cut
-
 package API::Instagram::Location;
+
+# ABSTRACT: Instagram Location Object
 
 use Moo;
 
@@ -13,6 +9,29 @@ has id         => ( is => 'ro' );
 has latitude   => ( is => 'ro' );
 has longitude  => ( is => 'ro' );
 has name       => ( is => 'ro' );
+
+
+sub recent_medias {
+	my $self = shift;
+	my $url  = "/locations/" . $self->id . "/media/recent";
+	$self->_instagram->_recent_medias( $url, @_ );
+}
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+API::Instagram::Location - Instagram Location Object
+
+=head1 VERSION
+
+version 0.005.1
 
 =head1 SYNOPSIS
 
@@ -49,7 +68,7 @@ Returns the latitude of the location.
 
 Returns the longitude of the location.
 
-=METHODS
+=head1 METHODS
 
 =head2 recent_medias
 
@@ -60,12 +79,15 @@ Returns a list of L<API::Instagram::Media> objects of recent medias from the loc
 
 Accepts C<count>, C<min_timestamp>, C<min_id>, C<max_id> and C<max_timestamp> as parameters.
 
+=head1 AUTHOR
+
+Gabriel Vieira <gabriel.vieira@gmail.com>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2014 by Gabriel Vieira.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
-
-sub recent_medias {
-	my $self = shift;
-	my $url  = "/locations/" . $self->id . "/media/recent";
-	$self->_instagram->_recent_medias( $url, @_ );
-}
-
-1;
