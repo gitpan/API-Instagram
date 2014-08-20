@@ -1,10 +1,16 @@
 ==================================================
-Changes from 2013-08-17 00:00:00 +0000 to present.
+Changes from 2013-08-20 00:00:00 +0000 to present.
 ==================================================
 
 ------------------------------------------
-version 0.007 at 2014-08-17 19:03:35 +0000
+version 0.008 at 2014-08-20 05:03:06 +0000
 ------------------------------------------
+
+  Change: 5845d74efe9ca8a1e7c37378f892ba0e562edb81
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-19 22:37:32 +0000
+
+    Many bug fixes; Better cache management; Starting version 0.008' 
 
   Change: 3d4f7c2554f544dfbf1607279d96ad908ec7a483
   Author: Gabriel Vieira <gabriel.vieira@gmail.com>
