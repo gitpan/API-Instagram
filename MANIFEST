@@ -12,6 +12,7 @@ lib/API/Instagram.pm
 lib/API/Instagram/Location.pm
 lib/API/Instagram/Media.pm
 lib/API/Instagram/Media/Comment.pm
+lib/API/Instagram/Search.pm
 lib/API/Instagram/Tag.pm
 lib/API/Instagram/User.pm
 t/00-comment.t
@@ -20,6 +21,7 @@ t/00-instagram.t
 t/00-load.t
 t/00-location.t
 t/00-media.t
+t/00-search.t
 t/00-tag.t
 t/00-user.t
 t/release-pod-coverage.t

@@ -1,10 +1,11 @@
 package API::Instagram;
 
-# ABSTRACT: OO Interface to Instagram REST API
+# ABSTRACT: Object Oriented Interface for the Instagram REST and Search APIs
 
-our $VERSION = '0.009';
+our $VERSION = '0.010';
 
 use Moo;
+with 'MooX::Singleton';
 
 use Carp;
 use strict;
@@ -20,6 +21,7 @@ use API::Instagram::Location;
 use API::Instagram::Tag;
 use API::Instagram::Media;
 use API::Instagram::Media::Comment;
+use API::Instagram::Search;
 
 has client_id         => ( is => 'ro', required => 1 );
 has client_secret     => ( is => 'ro', required => 1 );
@@ -85,6 +87,13 @@ sub tag { shift->_get_obj( 'Tag', 'name', shift ) }
 sub comment { shift->_get_obj( 'Media::Comment', 'id', shift ) }
 
 
+sub search {
+	my $self = shift;
+	my $type = shift;
+	API::Instagram::Search->new( type => $type )
+}
+
+
 #####################################################
 # Returns cached wanted object or creates a new one #
 #####################################################
@@ -100,9 +109,6 @@ sub _get_obj {
 
 	# Code used as cache key
 	my $cache_code = md5_hex( $code // $data);
-
-	# Adds this Instagram instance
-	$data->{_api} = $self;
 
 	# Returns cached value or creates a new object
 	my $return = $self->_cache($type)->{$cache_code} //= ("API::Instagram::$type")->new( $data );
@@ -202,7 +208,7 @@ __END__
 
 =head1 NAME
 
-API::Instagram - OO Interface to Instagram REST API
+API::Instagram - Object Oriented Interface for the Instagram REST and Search APIs
 
 =for Pod::Coverage client_id client_secret grant_type no_cache redirect_uri response_type scope
 
@@ -212,13 +218,13 @@ API::Instagram - OO Interface to Instagram REST API
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
 	use API::Instagram;
 
-	my $instagram = API::Instagram->new({
+	my $instagram = API::Instagram->instance({
 			client_id     => $client_id,
 			client_secret => $client_secret,
 			redirect_uri  => 'http://localhost',
@@ -250,7 +256,7 @@ Get the AUTH URL to authenticate.
 
 	use API::Instagram;
 
-	my $instagram = API::Instagram->new({
+	my $instagram = API::Instagram->instance({
 			client_id     => 'xxxxxxxxxx',
 			client_secret => 'xxxxxxxxxx',
 			redirect_uri  => 'http://localhost',
@@ -281,9 +287,9 @@ authenticated user credentials.
 
 =head1 METHODS
 
-=head2 new
+=head2 instance
 
-	my $instagram = API::Instagram->new({
+	my $instagram = API::Instagram->instance({
 			client_id     => $client_id,
 			client_secret => $client_secret,
 			redirect_uri  => 'http://localhost',
@@ -361,6 +367,20 @@ Get information about a tag. Returns an L<API::Instagram::Tag> object.
 	say $comment->text;
 
 Get information about a comment. Returns an L<API::Instagram::Media::Comment> object.
+
+=head2 search
+
+	my $search = $instagram->search('user');
+	my $users = $search->find( q => 'larry' );
+	for my $user ( @$users ) {
+		say $user->username;
+	}
+
+Returns an L<API::Instagram::Search> object, capable to search for the given B<type>.
+
+Where B<type> can be: C<user>, C<media>, C<tag> or C<location>.
+
+See L<API::Instagram::Search> for more details and examples.
 
 =head1 AUTHOR
 

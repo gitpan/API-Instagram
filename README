@@ -1,13 +1,14 @@
 NAME
-    API::Instagram - OO Interface to Instagram REST API
+    API::Instagram - Object Oriented Interface for the Instagram REST and
+    Search APIs
 
 VERSION
-    version 0.009
+    version 0.010
 
 SYNOPSIS
             use API::Instagram;
 
-            my $instagram = API::Instagram->new({
+            my $instagram = API::Instagram->instance({
                             client_id     => $client_id,
                             client_secret => $client_secret,
                             redirect_uri  => 'http://localhost',
@@ -37,7 +38,7 @@ DESCRIPTION
 
             use API::Instagram;
 
-            my $instagram = API::Instagram->new({
+            my $instagram = API::Instagram->instance({
                             client_id     => 'xxxxxxxxxx',
                             client_secret => 'xxxxxxxxxx',
                             redirect_uri  => 'http://localhost',
@@ -65,8 +66,8 @@ DESCRIPTION
             print $me->full_name;
 
 METHODS
-  new
-            my $instagram = API::Instagram->new({
+  instance
+            my $instagram = API::Instagram->instance({
                             client_id     => $client_id,
                             client_secret => $client_secret,
                             redirect_uri  => 'http://localhost',
@@ -144,6 +145,20 @@ METHODS
 
     Get information about a comment. Returns an
     API::Instagram::Media::Comment object.
+
+  search
+            my $search = $instagram->search('user');
+            my $users = $search->find( q => 'larry' );
+            for my $user ( @$users ) {
+                    say $user->username;
+            }
+
+    Returns an API::Instagram::Search object, capable to search for the
+    given type.
+
+    Where type can be: "user", "media", "tag" or "location".
+
+    See API::Instagram::Search for more details and examples.
 
 AUTHOR
     Gabriel Vieira <gabriel.vieira@gmail.com>
