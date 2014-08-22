@@ -1,10 +1,71 @@
 ==================================================
-Changes from 2013-08-20 00:00:00 +0000 to present.
+Changes from 2013-08-22 00:00:00 +0000 to present.
 ==================================================
 
 ------------------------------------------
-version 0.008 at 2014-08-20 05:03:06 +0000
+version 0.009 at 2014-08-22 00:39:58 +0000
 ------------------------------------------
+
+  Change: 3ad5168aebfb3b4f0bfbb5ea35c9804143c1001c
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-21 21:38:52 +0000
+
+    Starting version 0.009 
+
+  Change: c11b9ff04f2128df3e536b08fc54f108d659fad6
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-21 21:36:25 +0000
+
+    Added more tests. Now coverage of 100% 
+
+  Change: c7d6c67501d1e0ca0168f8c020fed2701cf76cb3
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-21 21:35:10 +0000
+
+    Some bugs fixed. Add last_likes and last_comments mehtods to
+    API::Instagram::Media objects 
+
+  Change: 78e1204e2c853e2e2f4f33261b0ac0a59b71f6e6
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 23:37:40 +0000
+
+    Adding API::Instagram::Media tests 
+
+  Change: 1014b57b8f0a5135a8e2c0c366160b70d9ec1a4e
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 20:24:03 +0000
+
+    Replacing LWP::UserAgent with Furl 
+
+  Change: 2284e36dc0b688c91ea316bfda29baedc9e803cd
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 17:29:55 +0000
+
+    Removed tabs from .travis.yml 
+
+  Change: f22e0e16a014f3b8a2ea2c9d63a9fd6e43579688
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 17:26:44 +0000
+
+    Trying Coveralls again 
+
+  Change: 69cab747152bf33aaa444479634466fa543e66d0
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 12:27:07 +0000
+
+    Removing Coveralls badge 
+
+  Change: e27f80a2a218910cb8df05e35a833d5097199ffa
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 12:15:22 +0000
+
+    Coveralls badge 
+
+  Change: 1a34fb41fcf395de0f1fb41cd7732b33a77c51a7
+  Author: Gabriel Vieira <gabriel.vieira@gmail.com>
+  Date : 2014-08-20 11:02:46 +0000
+
+    Adding Coverall badge 
 
   Change: 5845d74efe9ca8a1e7c37378f892ba0e562edb81
   Author: Gabriel Vieira <gabriel.vieira@gmail.com>

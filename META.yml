@@ -4,8 +4,10 @@ author:
   - 'Gabriel Vieira <gabriel.vieira@gmail.com>'
 build_requires:
   File::Spec: 0
+  Furl::Response: 0
   IO::Handle: 0
   IPC::Open3: 0
+  Test::MockObject::Extends: 0
   Test::More: 0
   perl: 5.010
 configure_requires:
@@ -20,9 +22,8 @@ name: API-Instagram
 requires:
   Carp: 0
   Digest::MD5: 0
+  Furl: 0
   JSON: 0
-  LWP::Protocol::https: 0
-  LWP::UserAgent: 0
   Moo: 0
   Time::Moment: 0
   URI: 0
@@ -33,4 +34,4 @@ resources:
   bugtracker: https://github.com/gabrielmad/api-instagram/issues
   homepage: http://metacpan.org/release/API-Instagram
   repository: git://github.com/gabrielmad/api-instagram.git
-version: 0.008
+version: 0.009

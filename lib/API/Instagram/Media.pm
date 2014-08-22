@@ -16,7 +16,7 @@ has user           => ( is => 'lazy', coerce => \&_coerce_user           );
 has tags           => ( is => 'lazy', coerce => \&_coerce_tags           );
 has location       => ( is => 'lazy', coerce => \&_coerce_location       );
 has users_in_photo => ( is => 'lazy', coerce => \&_coerce_users_in_photo );
-has caption        => ( is => 'lazy', coerce => sub { $_[0]->{text} } );
+has caption        => ( is => 'lazy', coerce => sub { $_[0]->{text} if $_[0] and ref $_[0] eq 'HASH' } );
 has created_time   => ( is => 'lazy', coerce => sub { Time::Moment->from_epoch( $_[0] ) } );
 has _data          => ( is => 'rwp', lazy => 1, builder => 1, clearer => 1 );
 
@@ -31,6 +31,19 @@ sub comments {
 	my $self = shift;
 	$self->_clear_data if shift;
 	$self->_data->{comments}->{count}
+}
+sub last_likes {
+	my $self = shift;
+	$self->_clear_data if shift;
+	my $api  = $self->_api;
+	[ map { $api->user($_) } @{ $self->_data->{likes}->{data} } ]
+}
+
+sub last_comments {
+	my $self = shift;
+	$self->_clear_data if shift;
+	my $api  = $self->_api;
+	[ map { $api->comment($_) } @{ $self->_data->{comments}->{data} } ]
 }
 
 sub get_likes {
@@ -49,7 +62,6 @@ sub get_comments {
 	[ map { $api->comment($_) } $api->_get_list( %opts, url => $url ) ]
 }
 
-
 sub BUILDARGS {
 	my ( $self, $opts ) = @_;
 
@@ -64,17 +76,21 @@ sub BUILDARGS {
 
 	for my $each ( @need_api ){
 
-		my ( $attr, $ref, $item_ref ) = @$each;
+		my ( $attr_name, $ref, $item_ref ) = @$each;
 
-		if ( exists $opts->{$attr} and ref $opts->{$attr} eq $ref ){
+		if ( exists $opts->{$attr_name} ){
 
-			my $data = $opts->{$attr};
+			my $attr = $opts->{$attr_name};
 
-			next if defined $item_ref    and
-					ref $data eq 'ARRAY' and
-					ref $data->[0] ne $item_ref;
+			next if defined $attr and (
+										ref $attr ne $ref or (
+																defined $item_ref    and
+																ref $attr eq 'ARRAY' and
+																ref $attr->[0] ne $item_ref
+															)
+										);
 
-			$opts->{$attr} = [ $opts->{_api}, $data ];
+			$opts->{$attr_name} = [ $opts->{_api}, $attr ];
 		}
 	}
 
@@ -105,27 +121,31 @@ sub _build__data {
 ############################################################
 sub _coerce_user {
 	my ( $self, $data ) = @{$_[0]};
-	$self->user( $data ) if defined $data;
+	return unless defined $data;
+	$self->user( $data )
 };
 
 sub _coerce_location {
 	my ( $self, $data ) = @{$_[0]};
-	$self->location( $data ) if defined $data;
+	return unless defined $data;
+	$self->location( $data )
 };
 
 sub _coerce_tags {
 	my ( $self, $data ) = @{$_[0]};
-	[ map { $self->tag($_) } @$data ] if defined $data and ref $data eq 'ARRAY';
+	return if ref $data ne 'ARRAY';
+	[ map { $self->tag($_) } @$data ]
 };
 	
 sub _coerce_users_in_photo {
 	my ( $self, $data ) = @{$_[0]};
+	return if ref $data ne 'ARRAY';
 	[
 		map {{
 			user     => $self->user( $_->{user} ),
 			position => $_->{position},
 		}} @$data
-	] if defined $data and ref $data eq 'ARRAY'
+	]
 };
 
 
@@ -145,7 +165,7 @@ API::Instagram::Media - Instagram Media Object
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 
@@ -239,7 +259,7 @@ Returns the media date in a L<Time::Moment> object.
 Returns media total likes.
 If you set C<1> as parameter it will renew all media data and return an up-do-date total likes.
 
-Hint: it also updates total comments.
+Hint: C<1> as parameter also updates total comments, last likes and last comments.
 
 =head2 comments
 
@@ -252,7 +272,29 @@ Hint: it also updates total comments.
 Returns media total comments.
 If you set C<1> as parameter it will renew all media data and return an up-do-date total comments.
 
-Hint: it also updates total likes.
+Hint: C<1> as parameter also updates total likes, last likes and last comments.
+
+=head2 last_likes
+
+	for my $user ( @{ $media->last_likes } ) {
+		say $user->username;
+	}
+
+Returns a list of C<API::Instagram::User> of the last users who liked the media.
+If you set C<1> as parameter it will renew all media data and return an up-do-date list.
+
+Hint: C<1> as parameter also updates total likes, total comments and last comments.
+
+=head2 last_comments
+
+	for my $comment ( @{ $media->last_comments } ) {
+		printf "%s: %s\n", $comment->from->username, $comment->text;
+	}
+
+Returns a list of C<API::Instagram::Media::Comment> of the last comments on the media.
+If you set C<1> as parameter it will renew all media data and return an up-do-date list.
+
+Hint: C<1> as parameter also updates total likes, total comments and last likes.
 
 =head2 get_likes
 

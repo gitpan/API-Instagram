@@ -2,7 +2,7 @@ package API::Instagram;
 
 # ABSTRACT: OO Interface to Instagram REST API
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 use Moo;
 
@@ -13,9 +13,7 @@ use Digest::MD5 'md5_hex';
 
 use URI;
 use JSON;
-use LWP::UserAgent;
-use LWP::Protocol::https;
-# use LWP::Protocol::Net::Curl;
+use Furl;
 
 use API::Instagram::User;
 use API::Instagram::Location;
@@ -33,7 +31,7 @@ has code              => ( is => 'rw', isa => sub { confess "Code not provided" 
 has access_token      => ( is => 'rw', isa => sub { confess "No access token provided" unless $_[0] } );
 has no_cache          => ( is => 'rw', default => sub { 0 } );
 
-has _ua               => ( is => 'ro', default => sub { LWP::UserAgent->new() } );
+has _ua               => ( is => 'ro', default => sub { Furl->new() } );
 has _obj_cache        => ( is => 'ro', default => sub { { User => {}, Media => {}, Location => {}, Tag => {}, 'Media::Comment' => {} } } );
 has _endpoint_url     => ( is => 'ro', default => sub { 'https://api.instagram.com/v1'                 } );
 has _authorize_url    => ( is => 'ro', default => sub { 'https://api.instagram.com/oauth/authorize'    } );
@@ -49,7 +47,7 @@ sub get_auth_url {
 
 	my @auth_fields = qw(client_id redirect_uri response_type scope);
 	for ( @auth_fields ) {
-		confess "ERROR: $_ required for generating authorization URL" unless defined $self->$_;
+		carp "ERROR: $_ required for generating authorization URL" and return unless defined $self->$_;
 	}
 
 	my $uri = URI->new( $self->_authorize_url );
@@ -63,14 +61,14 @@ sub get_access_token {
 
 	my @access_token_fields = qw(client_id redirect_uri grant_type client_secret code);
 	for ( @access_token_fields ) {
-		confess "ERROR: $_ required for generating access token." unless defined $self->$_;
+		carp "ERROR: $_ required for generating access token." and return unless defined $self->$_;
 	}
 
 	my $data = { map { $_ => $self->$_ } @access_token_fields };
-	my $json = from_json $self->_ua->post( $self->_access_token_url, $data )->content;
+	my $json = from_json $self->_ua->post( $self->_access_token_url, [], $data )->decoded_content;
 
 	my $meta = $json->{meta};
-	confess "ERROR $meta->{error_type}: $meta->{error_message}" if $meta->{code} ne '200';
+	carp "ERROR $meta->{error_type}: $meta->{error_message}" and return if $meta->{code} ne '200';
 
 	wantarray ? ( $json->{access_token}, $self->user( $json->{user} ) ) : $json->{access_token};
 }
@@ -110,7 +108,7 @@ sub _get_obj {
 	my $return = $self->_cache($type)->{$cache_code} //= ("API::Instagram::$type")->new( $data );
 
 	# Deletes cache if no-cache is set
-	delete $self->_cache($type)->{$code} if $self->no_cache;
+	delete $self->_cache($type)->{$cache_code} if $self->no_cache;
 
 	return $return;
 }
@@ -159,7 +157,7 @@ sub _get_list {
 sub _request {
 	my ( $self, $url, $params, $opts ) = @_;
 
-	confess "A valid access_token is required" unless defined $self->access_token;
+	carp "A valid access_token is required" and return {} unless defined $self->access_token;
 
 	# If URL is not prepared, prepares it
 	unless ( $opts->{prepared_url} ){
@@ -177,7 +175,7 @@ sub _request {
 	print "Requesting: $url$/" if $self->_debug;
 
 	# Treats response content
-	my $res  = decode_json $self->_ua->get( $url )->decoded_content;
+	my $res = decode_json $self->_ua->get( $url )->decoded_content;
 
 	# Verifies meta node
 	my $meta = $res->{meta};
@@ -187,20 +185,6 @@ sub _request {
 }
 
 sub _request_data { shift->_request(@_)->{data} || {} }
-
-sub _simple_request {
-	my $self   = shift;
-	my $url    = shift;
-	my $params = shift;
-
-	confess "A valid access_token is required" unless defined $self->access_token;
-	$params->{access_token} = $self->access_token;
-
-	my $uri = URI->new( $url );
-	$uri->query_form($params);
-
-	decode_json $self->_ua->get( $uri->as_string )->decoded_content;
-}
 
 ################################
 # Returns requested cache hash #
@@ -224,9 +208,11 @@ API::Instagram - OO Interface to Instagram REST API
 
 =for HTML <a href="https://travis-ci.org/gabrielmad/API-Instagram"><img src="https://travis-ci.org/gabrielmad/API-Instagram.svg?branch=build%2Fmaster"></a>
 
+=for HTML <a href='https://coveralls.io/r/gabrielmad/API-Instagram?branch=build%2Fmaster'><img src='https://coveralls.io/repos/gabrielmad/API-Instagram/badge.png?branch=build%2Fmaster' alt='Coverage Status' /></a>
+
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

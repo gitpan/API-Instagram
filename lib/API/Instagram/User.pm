@@ -36,22 +36,22 @@ sub followed_by {
 
 sub feed {
 	my $self = shift;
-	my @list = $self->_self_requests( 'feed', '/users/self/feed', @_ );
-	[ map { $self->_api->media($_) } @list ]
+	my @list = $self->_self_requests( 'feed', '/users/self/feed', @_ ) or return;
+	[ map { $self->_api->media($_) } @list ];
 }
 
 
 sub liked_media {
 	my $self = shift;
-	my @list = $self->_self_requests( 'liked-media', '/users/self/media/liked', @_ );
-	[ map { $self->_api->media($_) } @list ]
+	my @list = $self->_self_requests( 'liked-media', '/users/self/media/liked', @_ ) or return;
+	[ map { $self->_api->media($_) } @list ];
 }
 
 
 sub requested_by {
 	my $self = shift;
-	my @list = $self->_self_requests( 'requested-by', '/users/self/requested-by', @_ );
-	[ map { $self->_api->user($_) } @list ]
+	my @list = $self->_self_requests( 'requested-by', '/users/self/requested-by', @_ ) or return;
+	[ map { $self->_api->user($_) } @list ];
 }
 
 
@@ -88,7 +88,7 @@ sub _self_requests {
 
 	if ( $self->id ne $self->_api->user->id ){
 		carp "The $type is only available for the authenticated user";
-		return [];
+		return;
 	}
 
 	$self->_api->_get_list( %opts, url => $url )
@@ -99,7 +99,7 @@ sub BUILDARGS {
 	my $self = shift;
 	my $opts = shift;
 
-	$opts->{profile_picture} //= delete $opts->{profile_pic_url} if $opts->{profile_pic_url};
+	$opts->{profile_picture} //= delete $opts->{profile_pic_url} if exists $opts->{profile_pic_url};
 
 	return $opts;
 }
@@ -135,7 +135,7 @@ API::Instagram::User - Instagram User Object
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

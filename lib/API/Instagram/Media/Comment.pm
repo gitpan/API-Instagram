@@ -23,7 +23,8 @@ sub BUILDARGS {
 ############################################################
 sub _coerce_from {
 	my ( $self, $data ) = @{$_[0]};
-	$self->user( $data ) if defined $data;
+	return unless defined $data;
+	$self->user( $data );
 };
 
 
@@ -43,7 +44,7 @@ API::Instagram::Media::Comment - Instagram Media Comment Object
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 
