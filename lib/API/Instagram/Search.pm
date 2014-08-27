@@ -20,7 +20,7 @@ sub find {
 	my $type = $self->type;
 	my $url  = $search->{$type};
 	my $api  = API::Instagram->instance;
-	[ map { $api->$type($_) } $api->_get_list( %opts, url => $url ) ]
+	[ map { $api->$type($_) } $api->_get_list( { %opts, url => $url } ) ]
 }
 
 
@@ -40,7 +40,7 @@ API::Instagram::Search - Instagram Search Object
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 METHODS
 

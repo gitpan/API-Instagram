@@ -21,24 +21,28 @@ my %WriteMakefileArgs = (
   "NAME" => "API::Instagram",
   "PREREQ_PM" => {
     "Carp" => 0,
+    "Data::Dumper" => 0,
     "Digest::MD5" => 0,
     "Furl" => 0,
     "JSON" => 0,
     "Moo" => 0,
     "Time::Moment" => 0,
     "URI" => 0,
+    "experimental" => 0,
     "strict" => 0,
     "warnings" => 0
   },
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
     "Furl::Response" => 0,
+    "HTTP::Response" => 0,
     "IO::Handle" => 0,
     "IPC::Open3" => 0,
+    "Inline::Files" => 0,
     "Test::MockObject::Extends" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.011",
+  "VERSION" => "0.012",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -47,18 +51,22 @@ my %WriteMakefileArgs = (
 
 my %FallbackPrereqs = (
   "Carp" => 0,
+  "Data::Dumper" => 0,
   "Digest::MD5" => 0,
   "File::Spec" => 0,
   "Furl" => 0,
   "Furl::Response" => 0,
+  "HTTP::Response" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
+  "Inline::Files" => 0,
   "JSON" => 0,
   "Moo" => 0,
   "Test::MockObject::Extends" => 0,
   "Test::More" => 0,
   "Time::Moment" => 0,
   "URI" => 0,
+  "experimental" => 0,
   "strict" => 0,
   "warnings" => 0
 );
