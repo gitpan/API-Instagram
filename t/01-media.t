@@ -6,59 +6,47 @@ use Test::MockObject::Extends;
 
 use JSON;
 use API::Instagram;
-use Test::More tests => 27;
+use Test::More tests => 13;
 
 my $api = Test::MockObject::Extends->new(
 	API::Instagram->new({
-			client_id     => '123', client_secret => '456', redirect_uri  => 'http://localhost', no_cache      => 1, })
+			client_id     => '123',
+			client_secret => '456',
+			redirect_uri  => 'http://localhost',
+            no_cache      => 1,
+	})
 );
 
 my $data = join '', <DATA>;
 my $json = decode_json $data;
 $api->mock('_request', sub { $json });
-$api->mock('_get_list', sub { {} });
+$api->mock('_get_list', sub { [] });
 
-# First Object
-my $media = $api->media(3);
+my $media = $api->media( $json->{data} );
 isa_ok( $media, 'API::Instagram::Media' );
 
-is $media->id, 3;
-is $media->type, 'video';
-is $media->filter, 'Vesper';
-is $media->likes, 1;
-is $media->comments, 2;
-is $media->users_in_photo, undef;
-is $media->caption, undef;
-is $media->link, 'http://instagr.am/p/D/';
-is ref $media->images, 'HASH';
-is ref $media->videos, 'HASH';
-is ref $media->last_likes, 'ARRAY';
-is ref $media->last_comments,'ARRAY';
-is ref $media->get_likes, 'ARRAY';
-is ref $media->get_comments, 'ARRAY';
+is $media->location, undef;
+is ref $media->tags, 'ARRAY';
+is $media->tags->[0], undef;
 
-my $user = $media->user;
-isa_ok( $user, 'API::Instagram::User' );
-is $user->username, 'kevin';
+my $uip = $media->users_in_photo;
+is ref $uip, 'ARRAY';
 
-my $tags = $media->tags;
-is ref $tags, 'ARRAY';
-isa_ok( $tags->[0], 'API::Instagram::Tag' );
+my $item = $uip->[0];
+is ref $item, 'HASH';
 
-my $location = $media->location;
-isa_ok( $location, 'API::Instagram::Location');
-is $location->latitude, 0.2;
+my $item_user = $item->{user};
+isa_ok( $item_user, 'API::Instagram::User' );
+is $item_user->username, 'kevin';
 
-isa_ok( $media->created_time, 'Time::Moment' );
-is $media->created_time->year, 2010;
+my $item_pos = $item->{position};
+is ref $item_pos, 'HASH';
+is $item_pos->{y}, 0.9111;
 
-$json = decode_json $data;
-is $media->likes(1), 1;
-is $media->comments(1), 2;
+is ref $media->like,    'HASH';
+is ref $media->dislike, 'HASH';
 
-is ref $media->last_likes(1), 'ARRAY';
-is ref $media->last_comments(1), 'ARRAY';
-
+ok $media->comment("Nice pic!");
 
 __DATA__
 {
@@ -76,9 +64,22 @@ __DATA__
                 "height": 640
             }
         },
-        "users_in_photo": null,
+        "users_in_photo": [
+            {
+                "user": {
+                    "username": "kevin",
+                    "full_name": "Kevin S",
+                    "id": "3",
+                    "profile_picture": "..."
+                },
+                "position": {
+                    "x": 0.315,
+                    "y": 0.9111
+                }
+            }
+        ],
         "filter": "Vesper",
-        "tags": ["test"],
+        "tags": [],
         "comments": {
             "data": [{
                 "created_time": "1279332030",
@@ -90,8 +91,7 @@ __DATA__
                     "profile_picture": "http://distillery.s3.amazonaws.com/profiles/profile_1242695_75sq_1293915800.jpg"
                 },
                 "id": "8"
-            },
-            {
+            }, {
                 "created_time": "1279341004",
                 "text": "Chilako taco",
                 "from": {
@@ -142,7 +142,6 @@ __DATA__
             }
         },
         "id": "3",
-        "location": { "latitude":"0.2",
-        "longitude":"0.3"}
+        "location": null
     }
 }

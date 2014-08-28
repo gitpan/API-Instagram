@@ -35,14 +35,13 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "File::Spec" => 0,
     "Furl::Response" => 0,
-    "HTTP::Response" => 0,
     "IO::Handle" => 0,
     "IPC::Open3" => 0,
     "Inline::Files" => 0,
     "Test::MockObject::Extends" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.012",
+  "VERSION" => "0.013",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -56,7 +55,6 @@ my %FallbackPrereqs = (
   "File::Spec" => 0,
   "Furl" => 0,
   "Furl::Response" => 0,
-  "HTTP::Response" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,
   "Inline::Files" => 0,

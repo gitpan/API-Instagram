@@ -3,7 +3,7 @@ NAME
     Search APIs
 
 VERSION
-    version 0.012
+    version 0.013
 
 SYNOPSIS
             use API::Instagram;
@@ -155,13 +155,6 @@ METHODS
             say $tag->media_count;
 
     Get information about a tag. Returns an API::Instagram::Tag object.
-
-  comment
-            my $comment = $instagram->comment('1234567');
-            say $comment->text;
-
-    Get information about a comment. Returns an
-    API::Instagram::Media::Comment object.
 
   search
             my $search = $instagram->search('user');
